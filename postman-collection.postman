@@ -1,0 +1,260 @@
+{
+  "info": {
+    "name": "Node.js API - Posts & Users",
+    "description": "Complete API collection for Posts and Users management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of users per page"
+                }
+              ]
+            },
+            "description": "Retrieve all active users with pagination support"
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "64f8b2c3e4b0a1234567890a",
+                  "description": "MongoDB ObjectId of the user"
+                }
+              ]
+            },
+            "description": "Retrieve a specific user by their ID"
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Create a new user account"
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "64f8b2c3e4b0a1234567890a",
+                  "description": "MongoDB ObjectId of the user to update"
+                }
+              ]
+            },
+            "description": "Update user information (name and email)"
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "64f8b2c3e4b0a1234567890a",
+                  "description": "MongoDB ObjectId of the user to delete"
+                }
+              ]
+            },
+            "description": "Delete a user account"
+          }
+        }
+      ],
+      "description": "All user-related API endpoints"
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Get All Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of posts per page"
+                }
+              ]
+            },
+            "description": "Retrieve all posts with pagination and user population"
+          }
+        },
+        {
+          "name": "Get Post By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "{{postId}}"],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "64f8b2c3e4b0a1234567890b",
+                  "description": "MongoDB ObjectId of the post"
+                }
+              ]
+            },
+            "description": "Retrieve a specific post by its ID with user information"
+          }
+        },
+        {
+          "name": "Create Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"My First Post\",\n  \"content\": \"This is the content of my first post. It contains some interesting information about Node.js and MongoDB.\",\n  \"userId\": \"64f8b2c3e4b0a1234567890a\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts"]
+            },
+            "description": "Create a new post with title, content, and associated user ID"
+          }
+        },
+        {
+          "name": "Update Post",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Post Title\",\n  \"content\": \"This is the updated content of the post with new information.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "{{postId}}"],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "64f8b2c3e4b0a1234567890b",
+                  "description": "MongoDB ObjectId of the post to update"
+                }
+              ]
+            },
+            "description": "Update post title and content"
+          }
+        },
+        {
+          "name": "Delete Post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "{{postId}}"],
+              "variable": [
+                {
+                  "key": "postId",
+                  "value": "64f8b2c3e4b0a1234567890b",
+                  "description": "MongoDB ObjectId of the post to delete"
+                }
+              ]
+            },
+            "description": "Delete a post"
+          }
+        }
+      ],
+      "description": "All post-related API endpoints"
+    }
+  ]
+}
