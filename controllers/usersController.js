@@ -1,4 +1,5 @@
 const User = require("../models/users");
+const CustomError = require("../utils/customError");
 const { isValidObjectId } = require("mongoose");
 
 const getAllUsers = async (req, res) => {
@@ -20,7 +21,7 @@ const getAllUsers = async (req, res) => {
     status: "success",
     message: "Users fetched successfully",
     data: users,
-    pagenation: {
+    pagination: {
       page: Number(page),
       total,
       totalPages: Math.ceil(total / Number(limit)),
@@ -29,20 +30,17 @@ const getAllUsers = async (req, res) => {
   });
 };
 
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   const { id } = req.params;
 
   if (!isValidObjectId(id)) {
-    return res.status(400).json({
-      status: "error",
-      message: "Invalid id",
-    });
+    return next(new CustomError("Invalid id", 400));
   }
 
   const user = await User.findOne({ _id: id }, { password: 0 });
 
   if (!user) {
-    return res.status(404).json({ status: "error", message: "User not found" });
+    return next(new CustomError("User not found", 404));
   }
   res.status(200).json({
     status: "success",
@@ -51,14 +49,11 @@ const getUserById = async (req, res) => {
   });
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    return res.status(400).json({
-      status: "error",
-      message: "Name, email and password are required",
-    });
+    return next(new CustomError("Name, email and password are required", 400));
   }
 
   const newUser = await User.create({ name, email, password });
@@ -72,13 +67,10 @@ const createUser = async (req, res) => {
   });
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
   const { id } = req.params;
   if (!isValidObjectId(id)) {
-    return res.status(400).json({
-      status: "error",
-      message: "Invalid id",
-    });
+    return next(new CustomError("Invalid id", 400));
   }
   const { name, email } = req.body;
 
@@ -91,38 +83,29 @@ const updateUser = async (req, res) => {
   );
 
   if (!user) {
-    return res.status(404).json({
-      status: "error",
-      message: "User not found",
-    });
+    return next(new CustomError("User not found", 404));
   }
 
   const savedUser = user.toObject();
   delete savedUser.password;
 
   return res.status(200).json({
-    ststus: "success",
+    status: "success",
     message: "User updated successfully",
     data: savedUser,
   });
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   const { id } = req.params;
   if (!isValidObjectId(id)) {
-    return res.status(400).json({
-      status: "error",
-      message: "Invalid id",
-    });
+    return next(new CustomError("Invalid id", 400));
   }
 
   const user = await User.findOneAndDelete({ _id: id });
 
   if (!user) {
-    return res.status(404).json({
-      statsu: "error",
-      message: "User Not Found",
-    });
+    return next(new CustomError("User not found", 404));
   }
 
   return res.status(204).send();

@@ -1,18 +1,20 @@
 {
-  "name": "day-2",
+  "name": "nodejs-day4-lab",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
-  "author": "",
+  "author": "Adel Hany AbdelHalem",
   "license": "ISC",
-  "description": "",
+  "description": "Node.js Day 4 Lab - Enhanced Server with Middleware",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "express-rate-limit": "^7.4.1",
+    "joi": "^17.13.3",
     "mongoose": "^8.19.1"
   },
   "devDependencies": {

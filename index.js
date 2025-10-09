@@ -1,22 +1,32 @@
 require("dotenv").config();
 
-const postsRouter = require("./routers/postRouter");
-
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+
+// Import routers
 const usersRouter = require("./routers/usersRouter");
+const postsRouter = require("./routers/postRouter");
+
+// Import middlewares
+const errorHandler = require("./middlewares/errorHandler");
+const rateLimiter = require("./middlewares/rateLimiter");
+
 const app = express();
 
 // middleware to parse json body
 app.use(express.json());
 app.use(cors());
+app.use(rateLimiter);
 
 // routes
 app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
 
-const PORT = 5000;
+// error middleware (must be last)
+app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   mongoose
