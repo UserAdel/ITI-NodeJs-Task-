@@ -3,6 +3,10 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("express-xss-sanitizer");
+const hpp = require("hpp");
 
 // Import routers
 const usersRouter = require("./routers/usersRouter");
@@ -14,10 +18,15 @@ const rateLimiter = require("./middlewares/rateLimiter");
 
 const app = express();
 
-// middleware to parse json body
-app.use(express.json());
+// Security middlewares
+app.use(helmet()); // Set security HTTP headers
+app.use(rateLimiter); // Rate limiting
+app.use(express.json({ limit: "10kb" })); // Body parser with size limit
+app.use(mongoSanitize()); // Data sanitization against NoSQL query injection
+app.use(xss()); // Data sanitization against XSS
+app.use(hpp()); // Prevent parameter pollution
+
 app.use(cors());
-app.use(rateLimiter);
 
 // routes
 app.use("/users", usersRouter);

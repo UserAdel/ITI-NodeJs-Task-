@@ -1,6 +1,75 @@
-const User = require("../models/users");
-const CustomError = require("../utils/customError");
-const { isValidObjectId } = require("mongoose");
+const createSendToken = async (user, statusCode, res) => {
+  const token = await signToken({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "90d",
+  });
+
+  const cookieOptions = {
+    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  res.cookie("jwt", token, cookieOptions);
+
+  // Remove password from output
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
+const signup = async (req, res, next) => {
+  const { name, email, password, passwordConfirm, role } = req.body;
+
+  // Check if passwords match
+  if (password !== passwordConfirm) {
+    return next(new CustomError("Passwords do not match", 400));
+  }
+
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    role: role || "user",
+  });
+
+  await createSendToken(newUser, 201, res);
+};
+
+const login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // 1) Check if email and password exist
+  if (!email || !password) {
+    return next(new CustomError("Please provide email and password!", 400));
+  }
+
+  // 2) Check if user exists && password is correct
+  const user = await User.findOne({ email }).select("+password");
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new CustomError("Incorrect email or password", 401));
+  }
+
+  // 3) Check if user is active
+  if (!user.isActive) {
+    return next(
+      new CustomError(
+        "Your account has been deactivated. Please contact support.",
+        401
+      )
+    );
+  }
+
+  // 4) If everything ok, send token to client
+  await createSendToken(user, 200, res);
+};
 
 const getAllUsers = async (req, res) => {
   const { page, limit } = req.query;
@@ -112,6 +181,8 @@ const deleteUser = async (req, res, next) => {
 };
 
 module.exports = {
+  signup,
+  login,
   getAllUsers,
   getUserById,
   createUser,

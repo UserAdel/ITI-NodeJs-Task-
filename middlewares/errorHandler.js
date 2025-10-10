@@ -3,6 +3,21 @@ const CustomError = require("../utils/customError");
 module.exports = (err, req, res, next) => {
   console.error(`❌❌ Error: ${err.message}`, err.stack);
 
+  // JWT errors
+  if (err.name === "JsonWebTokenError") {
+    return res.status(401).json({
+      status: "error",
+      message: "Invalid token. Please log in again!",
+    });
+  }
+
+  if (err.name === "TokenExpiredError") {
+    return res.status(401).json({
+      status: "error",
+      message: "Your token has expired! Please log in again.",
+    });
+  }
+
   // mongoose cast error
   if (err.name === "CastError") {
     const tempArr = err.message.split(" ");
